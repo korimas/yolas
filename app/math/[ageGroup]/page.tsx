@@ -104,40 +104,6 @@ export default function MathPracticePage() {
     }
   }, [isValidAgeGroup, generateQuestions]);
 
-  // 提交答案
-  const handleSubmitAnswer = useCallback(() => {
-    if (!currentQuestion || userAnswer.trim() === '' || isAnswered) return;
-
-    const numericAnswer = parseInt(userAnswer);
-    const isCorrect = numericAnswer === currentQuestion.correctAnswer;
-    const timeSpent = new Date().getTime() - questionStartTime.getTime();
-
-    const newAnswerRecord: AnswerRecord = {
-      questionId: currentQuestion.id,
-      userAnswer: numericAnswer,
-      correctAnswer: currentQuestion.correctAnswer,
-      isCorrect,
-      timeSpent,
-      timestamp: new Date()
-    };
-
-    setAnswers(prev => [...prev, newAnswerRecord]);
-    setIsAnswered(true);
-
-    // 自动进入下一题
-    setTimeout(() => {
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        setUserAnswer('');
-        setIsAnswered(false);
-        setQuestionStartTime(new Date());
-      } else {
-        // 完成所有题目
-        completeSession();
-      }
-    }, 1500);
-  }, [currentQuestion, userAnswer, isAnswered, questionStartTime, currentQuestionIndex, questions.length]);
-
   // 完成学习会话
   const completeSession = useCallback(() => {
     if (!session) return;
@@ -160,6 +126,57 @@ export default function MathPracticePage() {
     // 跳转到结果页面
     router.push(`/math/${ageGroup}/result?sessionId=${completedSession.id}`);
   }, [session, startTime, answers, router, ageGroup]);
+
+  // 提交答案
+  const handleSubmitAnswer = useCallback(() => {
+    if (!currentQuestion || userAnswer.trim() === '' || isAnswered) return;
+
+    const numericAnswer = parseInt(userAnswer);
+    const isCorrect = numericAnswer === currentQuestion.correctAnswer;
+    const timeSpent = new Date().getTime() - questionStartTime.getTime();
+
+    const newAnswerRecord: AnswerRecord = {
+      questionId: currentQuestion.id,
+      userAnswer: numericAnswer,
+      correctAnswer: currentQuestion.correctAnswer,
+      isCorrect,
+      timeSpent,
+      timestamp: new Date()
+    };
+
+    setAnswers(prev => [...prev, newAnswerRecord]);
+    setIsAnswered(true);
+
+    // 如果答对，0.5秒后自动切换下一题
+    if (isCorrect) {
+      setTimeout(() => {
+        if (currentQuestionIndex < questions.length - 1) {
+          setCurrentQuestionIndex(prev => prev + 1);
+          setUserAnswer('');
+          setIsAnswered(false);
+          setQuestionStartTime(new Date());
+        } else {
+          // 完成所有题目
+          completeSession();
+        }
+      }, 500);
+    }
+  }, [currentQuestion, userAnswer, isAnswered, questionStartTime, currentQuestionIndex, questions.length, completeSession]);
+
+  // 下一题
+  const handleNextQuestion = useCallback(() => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setUserAnswer('');
+      setIsAnswered(false);
+      setQuestionStartTime(new Date());
+    }
+  }, [currentQuestionIndex, questions.length]);
+
+  // 完成练习
+  const handleFinishSession = useCallback(() => {
+    completeSession();
+  }, [completeSession]);
 
   // 处理键盘输入
   useEffect(() => {
@@ -194,82 +211,123 @@ export default function MathPracticePage() {
   // 加载中状态
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">正在生成题目...</p>
+          <div 
+            className="w-20 h-20 mx-auto mb-8 flex items-center justify-center text-3xl"
+            style={{ 
+              background: 'var(--primary-subtle)',
+              borderRadius: 'var(--radius-2xl)',
+              color: 'var(--primary)'
+            }}
+          >
+            🧮
+          </div>
+          <div 
+            className="w-16 h-16 mx-auto mb-8 rounded-full border-3 border-transparent animate-spin"
+            style={{ 
+              borderTopColor: 'var(--primary)',
+              borderRightColor: 'var(--primary)'
+            }}
+          ></div>
+          <h2 className="text-h2 mb-4">正在准备题目</h2>
+          <p className="text-body">为你精心挑选合适的练习题目...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
-
-      {/* 头部导航 */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link 
-            href="/"
-            className="text-gray-600 hover:text-gray-800 transition-colors text-sm"
-          >
-            ← 返回
-          </Link>
-          <h1 className="text-lg font-medium text-gray-800">{ageGroupConfig.title}</h1>
-          <div className="text-sm text-gray-500">
-            {currentQuestionIndex + 1} / {questions.length}
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+      {/* 专业导航栏 */}
+      <nav className="py-4 border-b" style={{ borderColor: 'var(--border-default)' }}>
+        <div className="container container-xl">
+          <div className="flex items-center justify-between">
+            <Link 
+              href="/subjects/math"
+              className="button button-ghost"
+            >
+              ← 返回选择
+            </Link>
+            <div className="text-center">
+              <h1 className="text-h2">{ageGroupConfig.title}</h1>
+              <p className="text-body-sm">第 {currentQuestionIndex + 1} 题 / 共 {questions.length} 题</p>
+            </div>
+            <div className="w-20"></div>
           </div>
         </div>
-      </header>
+      </nav>
 
-      {/* 进度条 */}
-      <div className="bg-white border-b border-gray-100 px-4 py-2">
-        <ProgressBar 
-          current={currentQuestionIndex + 1} 
-          total={questions.length}
-        />
+      {/* 进度指示器 */}
+      <div className="py-4" style={{ background: 'var(--surface)' }}>
+        <div className="container container-xl">
+          <div className="mb-2 flex justify-between items-center">
+            <span className="text-body-sm">学习进度</span>
+            <span className="text-body-sm font-medium">{Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}%</span>
+          </div>
+          <div 
+            className="h-2 rounded-full overflow-hidden"
+            style={{ background: 'var(--border-light)' }}
+          >
+            <div
+              className="h-full transition-all duration-500 rounded-full"
+              style={{ 
+                background: 'var(--primary)',
+                width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`
+              }}
+            ></div>
+          </div>
+        </div>
       </div>
 
-      {/* 主要内容 */}
-      <main className="flex-1 flex flex-col lg:grid lg:grid-cols-4 gap-2 lg:gap-4 p-2 lg:p-4 overflow-hidden">
-        {/* 题目区域 */}
-        <div className="flex-1 lg:col-span-3 flex flex-col">
-          <div className="bg-white border border-gray-200 rounded p-4 lg:p-6 flex-1 flex flex-col justify-center space-y-6 lg:space-y-12">
-            <div>
-              <QuestionDisplay 
-                question={currentQuestion}
-                fontSize={ageGroupConfig.fontSize}
-                isAnswered={isAnswered}
-                userAnswer={userAnswer}
-                onAnswerChange={setUserAnswer}
-                onSubmit={handleSubmitAnswer}
-                disabled={isAnswered}
-              />
+      {/* 主要内容区域 */}
+      <main className="flex-1 py-8">
+        <div className="container container-xl h-full">
+          <div className="max-w-4xl mx-auto w-full">
+            {/* 统计信息面板 - 放在算式上面 */}
+            <div className="mb-8">
+              <div className="card-outlined p-4">
+                <StatsPanel 
+                  stats={stats}
+                  ageGroup={ageGroup}
+                  className=""
+                />
+              </div>
             </div>
-            
-            <div>
-              <AnswerInput
-                value={userAnswer}
-                onChange={setUserAnswer}
-                onSubmit={handleSubmitAnswer}
-                disabled={isAnswered}
-                fontSize={ageGroupConfig.fontSize}
-                buttonSize={ageGroupConfig.buttonSize}
-                showResult={isAnswered}
-                isCorrect={isAnswered ? parseInt(userAnswer) === currentQuestion?.correctAnswer : false}
-                correctAnswer={currentQuestion?.correctAnswer}
-              />
+
+            {/* 题目和答题区域 */}
+            <div className="card-elevated h-full p-8 lg:p-12 flex flex-col justify-center">
+              <div className="max-w-4xl mx-auto w-full space-y-12">
+                {/* 题目显示 */}
+                <div className="text-center">
+                  <QuestionDisplay 
+                    question={currentQuestion}
+                    fontSize={ageGroupConfig.fontSize}
+                    isAnswered={isAnswered}
+                    userAnswer={userAnswer}
+                    onAnswerChange={setUserAnswer}
+                    onSubmit={handleSubmitAnswer}
+                    disabled={isAnswered}
+                  />
+                </div>
+                
+                {/* 答题区域 */}
+                <div className="text-center">
+                  <AnswerInput
+                    value={userAnswer}
+                    onChange={setUserAnswer}
+                    onSubmit={handleSubmitAnswer}
+                    disabled={isAnswered}
+                    fontSize={ageGroupConfig.fontSize}
+                    buttonSize={ageGroupConfig.buttonSize}
+                    showResult={isAnswered}
+                    isCorrect={isAnswered ? parseInt(userAnswer) === currentQuestion?.correctAnswer : false}
+                    correctAnswer={currentQuestion?.correctAnswer}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* 统计面板 */}
-        <div className="lg:col-span-1 h-auto lg:h-full">
-          <StatsPanel 
-            stats={stats}
-            ageGroup={ageGroup}
-            className="bg-white border border-gray-200 rounded p-3 lg:p-4 h-auto lg:h-full"
-          />
         </div>
       </main>
     </div>

@@ -75,14 +75,6 @@ export default function ResultPage() {
 
   const performance = getPerformanceLevel(accuracy);
 
-  const getEncouragementMessage = (accuracy: number) => {
-    if (accuracy >= 95) return "太完美了！你是数学小天才！🌟";
-    if (accuracy >= 90) return "表现优秀！继续保持这个水平！⭐";
-    if (accuracy >= 80) return "做得很好！再接再厉！👏";
-    if (accuracy >= 70) return "不错的开始！多练习会更好！💪";
-    return "不要气馁！每次练习都是进步！🚀";
-  };
-
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
       {/* 头部 */}
@@ -104,7 +96,6 @@ export default function ResultPage() {
         {/* 结果概览 */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-medium text-gray-800 mb-3">练习完成</h2>
-          <p className="text-gray-600">{getEncouragementMessage(accuracy)}</p>
         </div>
 
         {/* 结果统计 */}

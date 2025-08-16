@@ -40,17 +40,6 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ stats, ageGroup, className = ''
     return 'bg-red-100';
   };
 
-  const getMotivationalMessage = (accuracy: number, totalQuestions: number) => {
-    if (totalQuestions === 0) return "开始答题吧！🌟";
-    
-    if (accuracy >= 95) return "太完美了！🏆";
-    if (accuracy >= 90) return "表现优秀！⭐";
-    if (accuracy >= 80) return "做得很好！👍";
-    if (accuracy >= 70) return "继续努力！💪";
-    if (accuracy >= 60) return "加油！你可以的！🔥";
-    return "不要放弃！💪";
-  };
-
   const ageGroupEmojis = {
     [AgeGroup.PRESCHOOL]: "🌟",
     [AgeGroup.ELEMENTARY_LOW]: "🚀", 
@@ -61,46 +50,41 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ stats, ageGroup, className = ''
     <div className={className}>
       {/* 标题 */}
       <div className="text-center mb-4">
-        <h3 className="text-lg font-medium text-gray-800">学习统计</h3>
+        <h3 className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>学习统计</h3>
+        <div className="text-xs mt-1" style={{ color: 'var(--text-quaternary)' }}>
+          {ageGroupEmojis[ageGroup]} {ageGroup === AgeGroup.PRESCHOOL ? '学前班' : ageGroup === AgeGroup.ELEMENTARY_LOW ? '小学低年级' : '小学高年级'}
+        </div>
       </div>
 
-      {/* 统计项目 */}
-      <div className="space-y-3">
+      {/* 统计项目 - 紧凑布局 */}
+      <div className="grid grid-cols-2 gap-3">
         {/* 答题进度 */}
-        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-          <span className="text-sm text-gray-600">已答题数</span>
-          <span className="font-medium text-gray-800">{stats.totalQuestions}</span>
+        <div className="text-center p-3 rounded-lg" style={{ background: 'var(--primary-subtle)' }}>
+          <div className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>{stats.totalQuestions}</div>
+          <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>已答题数</div>
         </div>
 
         {/* 正确答案 */}
-        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-          <span className="text-sm text-gray-600">答对题数</span>
-          <span className="font-medium text-gray-800">{stats.correctAnswers}</span>
+        <div className="text-center p-3 rounded-lg" style={{ background: 'var(--success-light)' }}>
+          <div className="text-2xl font-bold" style={{ color: 'var(--success)' }}>{stats.correctAnswers}</div>
+          <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>答对题数</div>
         </div>
 
         {/* 正确率 */}
-        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-          <span className="text-sm text-gray-600">正确率</span>
-          <span className="font-medium text-gray-800">
+        <div className="text-center p-3 rounded-lg" style={{ background: 'var(--warning-light)' }}>
+          <div className="text-2xl font-bold" style={{ color: 'var(--warning)' }}>
             {stats.totalQuestions > 0 ? Math.round(stats.accuracy) : 0}%
-          </span>
+          </div>
+          <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>正确率</div>
         </div>
 
         {/* 用时 */}
-        <div className="flex justify-between items-center py-2">
-          <span className="text-sm text-gray-600">学习时长</span>
-          <span className="font-medium text-gray-800">{formatTime(stats.timeSpent)}</span>
+        <div className="text-center p-3 rounded-lg" style={{ background: 'var(--error-light)' }}>
+          <div className="text-lg font-bold" style={{ color: 'var(--error)' }}>{formatTime(stats.timeSpent)}</div>
+          <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>学习时长</div>
         </div>
       </div>
 
-      {/* 鼓励信息 */}
-      {stats.totalQuestions > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="text-center text-sm text-gray-600">
-            {getMotivationalMessage(stats.accuracy, stats.totalQuestions)}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

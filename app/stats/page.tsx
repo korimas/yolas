@@ -10,12 +10,17 @@ export default function StatsPage() {
   const [stats, setStats] = useState<any>(null);
   const [progress, setProgress] = useState<any>(null);
   const [recentSessions, setRecentSessions] = useState<LearningSession[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadData();
   }, [selectedAgeGroup]);
 
-  const loadData = () => {
+  const loadData = async () => {
+    setIsLoading(true);
+    // 添加一点延迟以显示加载状态
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     const learningStats = StorageManager.getLearningStats(selectedAgeGroup);
     const userProgress = StorageManager.getProgress(selectedAgeGroup);
     const sessions = StorageManager.getSessions()
@@ -26,6 +31,7 @@ export default function StatsPage() {
     setStats(learningStats);
     setProgress(userProgress);
     setRecentSessions(sessions);
+    setIsLoading(false);
   };
 
   const formatTime = (milliseconds: number) => {
@@ -73,185 +79,423 @@ export default function StatsPage() {
     }
   };
 
+  const getAgeGroupLabel = (ageGroup: AgeGroup) => {
+    switch (ageGroup) {
+      case AgeGroup.PRESCHOOL:
+        return '学前班';
+      case AgeGroup.ELEMENTARY_LOW:
+        return '小学低年级';
+      case AgeGroup.ELEMENTARY_HIGH:
+        return '小学高年级';
+      default:
+        return '';
+    }
+  };
+
+  // 计算进度百分比
+  const getProgressPercentage = (current: number, target: number = 100) => {
+    return Math.min((current / target) * 100, 100);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+        <div className="text-center">
+          <div 
+            className="w-12 h-12 mx-auto mb-6 rounded-full border-2 border-transparent animate-spin"
+            style={{ 
+              borderTopColor: 'var(--primary)',
+              borderRightColor: 'var(--primary)'
+            }}
+          ></div>
+          <p className="text-body">正在加载统计数据...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!stats || !progress) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">正在加载统计数据...</p>
+          <div 
+            className="w-20 h-20 mx-auto mb-8 flex items-center justify-center text-3xl"
+            style={{ 
+              background: 'var(--primary-subtle)',
+              borderRadius: 'var(--radius-2xl)',
+              color: 'var(--primary)'
+            }}
+          >
+            📊
+          </div>
+          <h2 className="text-h2 mb-4">暂无学习数据</h2>
+          <p className="text-body mb-8">开始你的第一次练习，记录学习成长轨迹</p>
+          <Link
+            href="/subjects/math"
+            className="button button-primary button-lg"
+          >
+            开始练习
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
-      {/* 头部 */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link 
-            href="/"
-            className="text-gray-600 hover:text-gray-800 transition-colors text-sm"
-          >
-            ← 返回首页
-          </Link>
-          <h1 className="text-lg font-medium text-gray-800">学习统计</h1>
-          <div className="space-x-2">
-            <button
-              onClick={exportData}
-              className="bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700 transition-colors text-sm"
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      {/* 专业导航栏 */}
+      <nav className="py-6 border-b" style={{ borderColor: 'var(--border-default)' }}>
+        <div className="container container-xl">
+          <div className="flex items-center justify-between">
+            <Link 
+              href="/"
+              className="button button-ghost"
             >
-              导出
-            </button>
-            <button
-              onClick={clearData}
-              className="bg-white text-gray-800 border border-gray-300 px-3 py-1 rounded hover:bg-gray-50 transition-colors text-sm"
-            >
-              清空
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1 max-w-6xl mx-auto px-4 py-6 overflow-y-auto">
-        {/* 年龄段选择 */}
-        <div className="mb-6">
-          <div className="flex justify-center space-x-2">
-            {Object.values(AgeGroup).map((ageGroup) => (
+              ← 返回首页
+            </Link>
+            <h1 className="text-h1">学习统计</h1>
+            <div className="flex items-center gap-3">
               <button
-                key={ageGroup}
-                onClick={() => setSelectedAgeGroup(ageGroup)}
-                className={`px-4 py-2 rounded text-sm transition-colors ${
-                  selectedAgeGroup === ageGroup
-                    ? 'bg-gray-800 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
+                onClick={exportData}
+                className="button button-default button-sm"
+                title="导出学习数据"
               >
-                {ageGroup === AgeGroup.PRESCHOOL && '学前班'}
-                {ageGroup === AgeGroup.ELEMENTARY_LOW && '小学低年级'}
-                {ageGroup === AgeGroup.ELEMENTARY_HIGH && '小学高年级'}
+                📤 导出
               </button>
-            ))}
+              <button
+                onClick={clearData}
+                className="button button-ghost button-sm"
+                title="清空所有数据"
+              >
+                🗑️ 清空
+              </button>
+            </div>
           </div>
         </div>
+      </nav>
 
-        {/* 总览统计 */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white border border-gray-200 rounded p-4 text-center">
-            <div className="text-xl font-medium text-gray-800">{stats.streakDays}</div>
-            <div className="text-sm text-gray-600">连续学习天数</div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded p-4 text-center">
-            <div className="text-xl font-medium text-gray-800">{stats.totalQuestions}</div>
-            <div className="text-sm text-gray-600">总答题数</div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded p-4 text-center">
-            <div className="text-xl font-medium text-gray-800">{Math.round(stats.totalAccuracy)}%</div>
-            <div className="text-sm text-gray-600">总正确率</div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded p-4 text-center">
-            <div className="text-xl font-medium text-gray-800">{formatTime(progress.totalLearningTime)}</div>
-            <div className="text-sm text-gray-600">总学习时长</div>
-          </div>
-        </div>
-
-        {/* 今日和本周统计 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-          {/* 今日统计 */}
-          <div className="bg-white border border-gray-200 rounded p-4">
-            <h3 className="text-lg font-medium text-gray-800 mb-3">今日学习</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">答题数量</span>
-                <span className="font-medium">{stats.todayQuestions} 题</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">正确率</span>
-                <span className="font-medium">{Math.round(stats.todayAccuracy)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 h-1">
-                <div
-                  className="bg-gray-600 h-1 transition-all duration-500"
-                  style={{ width: `${Math.min(stats.todayAccuracy, 100)}%` }}
-                ></div>
+      <main className="py-12">
+        <div className="container container-xl">
+          {/* 年龄段选择器 */}
+          <div className="mb-16">
+            <div className="text-center mb-8">
+              <h2 className="text-h2 mb-4">选择年龄段</h2>
+              <p className="text-body-sm">查看不同年龄段的学习统计数据</p>
+            </div>
+            <div className="flex justify-center">
+              <div className="flex p-1 rounded-lg" style={{ background: 'var(--border-light)' }}>
+                {Object.values(AgeGroup).map((ageGroup) => (
+                  <button
+                    key={ageGroup}
+                    onClick={() => setSelectedAgeGroup(ageGroup)}
+                    className={`px-6 py-3 rounded-md text-sm font-medium transition-all duration-200 ${
+                      selectedAgeGroup === ageGroup
+                        ? 'button-primary'
+                        : 'bg-transparent hover:bg-white'
+                    }`}
+                    style={{ 
+                      color: selectedAgeGroup === ageGroup 
+                        ? 'var(--surface)' 
+                        : 'var(--text-secondary)'
+                    }}
+                  >
+                    {getAgeGroupLabel(ageGroup)}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* 本周统计 */}
-          <div className="bg-white border border-gray-200 rounded p-4">
-            <h3 className="text-lg font-medium text-gray-800 mb-3">本周学习</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">答题数量</span>
-                <span className="font-medium">{stats.weeklyQuestions} 题</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">正确率</span>
-                <span className="font-medium">{Math.round(stats.weeklyAccuracy)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 h-1">
-                <div
-                  className="bg-gray-600 h-1 transition-all duration-500"
-                  style={{ width: `${Math.min(stats.weeklyAccuracy, 100)}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 最近练习记录 */}
-        <div className="bg-white border border-gray-200 rounded p-4 mb-6">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">最近练习记录</h3>
-          
-          {recentSessions.length === 0 ? (
-            <div className="text-center py-6 text-gray-500">
-              还没有练习记录，快去开始学习吧！
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {recentSessions.map((session) => (
-                <div
-                  key={session.id}
-                  className="flex justify-between items-center p-3 border border-gray-100 rounded hover:bg-gray-50 transition-colors"
+          {/* 核心统计指标 */}
+          <div className="mb-16">
+            <h3 className="text-h2 text-center mb-12">学习概览</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* 连续学习天数 */}
+              <div className="card-elevated p-8 text-center">
+                <div 
+                  className="w-16 h-16 mx-auto mb-6 flex items-center justify-center text-2xl"
+                  style={{ 
+                    background: 'var(--success-light)',
+                    borderRadius: 'var(--radius-2xl)',
+                    color: 'var(--success)'
+                  }}
                 >
-                  <div>
-                    <div className="font-medium text-gray-800 text-sm">
-                      {formatDate(new Date(session.startTime))}
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      {session.correctAnswers}/{session.totalQuestions} 题 · 
-                      {Math.round((session.correctAnswers / session.totalQuestions) * 100)}%
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs text-gray-600">
-                      {formatTime(session.totalTime)}
-                    </div>
-                    <Link
-                      href={`/math/${session.ageGroup}/result?sessionId=${session.id}`}
-                      className="text-gray-800 hover:text-gray-600 text-xs"
-                    >
-                      查看详情 →
-                    </Link>
+                  🔥
+                </div>
+                <div className="text-display text-center mb-2">{stats.streakDays}</div>
+                <div className="text-body-sm">连续学习天数</div>
+                <div className="mt-4 text-overline">
+                  {stats.streakDays >= 7 ? '学习习惯优秀' : '继续保持'}
+                </div>
+              </div>
+
+              {/* 总答题数 */}
+              <div className="card-elevated p-8 text-center">
+                <div 
+                  className="w-16 h-16 mx-auto mb-6 flex items-center justify-center text-2xl"
+                  style={{ 
+                    background: 'var(--primary-subtle)',
+                    borderRadius: 'var(--radius-2xl)',
+                    color: 'var(--primary)'
+                  }}
+                >
+                  📝
+                </div>
+                <div className="text-display text-center mb-2">{stats.totalQuestions}</div>
+                <div className="text-body-sm">总答题数</div>
+                <div className="mt-4 text-overline">
+                  累计练习量
+                </div>
+              </div>
+
+              {/* 总正确率 */}
+              <div className="card-elevated p-8 text-center">
+                <div 
+                  className="w-16 h-16 mx-auto mb-6 flex items-center justify-center text-2xl"
+                  style={{ 
+                    background: 'var(--warning-light)',
+                    borderRadius: 'var(--radius-2xl)',
+                    color: 'var(--warning)'
+                  }}
+                >
+                  🎯
+                </div>
+                <div className="text-display text-center mb-2">{Math.round(stats.totalAccuracy)}%</div>
+                <div className="text-body-sm">总正确率</div>
+                <div className="mt-4">
+                  <div 
+                    className="h-2 rounded-full"
+                    style={{ background: 'var(--border-light)' }}
+                  >
+                    <div
+                      className="h-2 rounded-full transition-all duration-500"
+                      style={{ 
+                        background: 'var(--warning)',
+                        width: `${Math.min(stats.totalAccuracy, 100)}%`
+                      }}
+                    ></div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              </div>
 
-        {/* 开始练习按钮 */}
-        <div className="text-center">
-          <Link
-            href={`/math/${selectedAgeGroup}`}
-            className="bg-gray-800 text-white py-2 px-6 rounded hover:bg-gray-700 transition-colors inline-block"
-          >
-            开始新的练习
-          </Link>
+              {/* 总学习时长 */}
+              <div className="card-elevated p-8 text-center">
+                <div 
+                  className="w-16 h-16 mx-auto mb-6 flex items-center justify-center text-2xl"
+                  style={{ 
+                    background: 'var(--error-light)',
+                    borderRadius: 'var(--radius-2xl)',
+                    color: 'var(--error)'
+                  }}
+                >
+                  ⏱️
+                </div>
+                <div className="text-h1 text-center mb-2">{formatTime(progress.totalLearningTime)}</div>
+                <div className="text-body-sm">总学习时长</div>
+                <div className="mt-4 text-overline">
+                  专注时间
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 今日和本周统计 */}
+          <div className="mb-16">
+            <h3 className="text-h2 text-center mb-12">学习进度</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* 今日学习 */}
+              <div className="card-elevated p-8">
+                <div className="flex items-center mb-6">
+                  <div 
+                    className="w-12 h-12 mr-4 flex items-center justify-center text-xl"
+                    style={{ 
+                      background: 'var(--primary-subtle)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--primary)'
+                    }}
+                  >
+                    📅
+                  </div>
+                  <h4 className="text-h3">今日学习</h4>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <span className="text-body">答题数量</span>
+                    <span className="text-h3">{stats.todayQuestions} 题</span>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-body">正确率</span>
+                      <span className="text-h3">{Math.round(stats.todayAccuracy)}%</span>
+                    </div>
+                    <div 
+                      className="h-3 rounded-full"
+                      style={{ background: 'var(--border-light)' }}
+                    >
+                      <div
+                        className="h-3 rounded-full transition-all duration-700"
+                        style={{ 
+                          background: 'var(--primary)',
+                          width: `${Math.min(stats.todayAccuracy, 100)}%`
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t" style={{ borderColor: 'var(--border-light)' }}>
+                    <div className="text-overline mb-2">今日目标进度</div>
+                    <div className="text-body-sm">
+                      {stats.todayQuestions >= 10 ? '✅ 已完成每日目标' : `还需完成 ${10 - stats.todayQuestions} 题`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 本周学习 */}
+              <div className="card-elevated p-8">
+                <div className="flex items-center mb-6">
+                  <div 
+                    className="w-12 h-12 mr-4 flex items-center justify-center text-xl"
+                    style={{ 
+                      background: 'var(--success-light)',
+                      borderRadius: 'var(--radius-lg)',
+                      color: 'var(--success)'
+                    }}
+                  >
+                    📊
+                  </div>
+                  <h4 className="text-h3">本周学习</h4>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <span className="text-body">答题数量</span>
+                    <span className="text-h3">{stats.weeklyQuestions} 题</span>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-body">正确率</span>
+                      <span className="text-h3">{Math.round(stats.weeklyAccuracy)}%</span>
+                    </div>
+                    <div 
+                      className="h-3 rounded-full"
+                      style={{ background: 'var(--border-light)' }}
+                    >
+                      <div
+                        className="h-3 rounded-full transition-all duration-700"
+                        style={{ 
+                          background: 'var(--success)',
+                          width: `${Math.min(stats.weeklyAccuracy, 100)}%`
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t" style={{ borderColor: 'var(--border-light)' }}>
+                    <div className="text-overline mb-2">本周目标进度</div>
+                    <div className="text-body-sm">
+                      {stats.weeklyQuestions >= 50 ? '🎉 超额完成本周目标' : `本周目标：${stats.weeklyQuestions}/50 题`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 最近练习记录 */}
+          <div className="mb-16">
+            <h3 className="text-h2 text-center mb-12">最近练习记录</h3>
+            <div className="card-elevated p-8">
+              {recentSessions.length === 0 ? (
+                <div className="text-center py-12">
+                  <div 
+                    className="w-20 h-20 mx-auto mb-6 flex items-center justify-center text-3xl"
+                    style={{ 
+                      background: 'var(--border-light)',
+                      borderRadius: 'var(--radius-2xl)',
+                      color: 'var(--text-quaternary)'
+                    }}
+                  >
+                    📝
+                  </div>
+                  <h4 className="text-h3 mb-4">还没有练习记录</h4>
+                  <p className="text-body mb-8">开始你的第一次练习，记录学习成长轨迹</p>
+                  <Link
+                    href={`/math/${selectedAgeGroup}`}
+                    className="button button-primary button-lg"
+                  >
+                    开始练习
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentSessions.map((session, index) => (
+                    <div
+                      key={session.id}
+                      className="card p-6 flex items-center justify-between hover:scale-[1.01] transition-all duration-200"
+                    >
+                      <div className="flex items-center">
+                        <div 
+                          className="w-12 h-12 mr-4 flex items-center justify-center text-lg font-semibold"
+                          style={{ 
+                            background: session.correctAnswers / session.totalQuestions >= 0.8 
+                              ? 'var(--success-light)' 
+                              : session.correctAnswers / session.totalQuestions >= 0.6 
+                              ? 'var(--warning-light)' 
+                              : 'var(--error-light)',
+                            borderRadius: 'var(--radius-lg)',
+                            color: session.correctAnswers / session.totalQuestions >= 0.8 
+                              ? 'var(--success)' 
+                              : session.correctAnswers / session.totalQuestions >= 0.6 
+                              ? 'var(--warning)' 
+                              : 'var(--error)'
+                          }}
+                        >
+                          {Math.round((session.correctAnswers / session.totalQuestions) * 100)}%
+                        </div>
+                        <div>
+                          <div className="text-body-sm font-medium mb-1">
+                            {formatDate(new Date(session.startTime))}
+                          </div>
+                          <div className="text-body-sm">
+                            答对 {session.correctAnswers}/{session.totalQuestions} 题 · 用时 {formatTime(session.totalTime)}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Link
+                        href={`/math/${session.ageGroup}/result?sessionId=${session.id}`}
+                        className="button button-ghost button-sm"
+                      >
+                        查看详情 →
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 行动按钮 */}
+          <div className="text-center">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              <Link
+                href={`/math/${selectedAgeGroup}`}
+                className="button button-primary button-lg"
+              >
+                🎯 开始新的练习
+              </Link>
+              <Link
+                href="/subjects/math"
+                className="button button-ghost button-lg"
+              >
+                选择其他年龄段
+              </Link>
+            </div>
+          </div>
         </div>
       </main>
     </div>
