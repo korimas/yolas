@@ -4,33 +4,39 @@ import Link from "next/link";
 import { AgeGroup } from "@/types";
 
 export default function Home() {
-  const ageGroups = [
+  // 学科分类
+  const subjects = [
     {
-      group: AgeGroup.PRESCHOOL,
-      title: "学前班",
-      subtitle: "3-5岁",
-      description: "数字认知 · 10以内加减法 · 图形计数",
-      bgColor: "bg-gray-50",
-      textColor: "text-gray-800",
-      borderColor: "border-gray-200"
+      id: "math",
+      title: "数学练习",
+      description: "口算练习、应用题解答",
+      icon: "🧮",
+      available: true,
+      route: "/subjects/math"
     },
     {
-      group: AgeGroup.ELEMENTARY_LOW,
-      title: "小学低年级", 
-      subtitle: "6-8岁",
-      description: "100以内加减法 · 乘法口诀 · 简单应用题",
-      bgColor: "bg-gray-100",
-      textColor: "text-gray-800", 
-      borderColor: "border-gray-300"
+      id: "chinese",
+      title: "语文练习",
+      description: "拼音、识字、阅读理解",
+      icon: "📚",
+      available: false,
+      route: "/subjects/chinese"
     },
     {
-      group: AgeGroup.ELEMENTARY_HIGH,
-      title: "小学高年级",
-      subtitle: "9-12岁", 
-      description: "多位数运算 · 分数运算 · 文字应用题",
-      bgColor: "bg-gray-200",
-      textColor: "text-gray-800",
-      borderColor: "border-gray-400"
+      id: "english",
+      title: "英语练习", 
+      description: "单词、语法、听力练习",
+      icon: "🔤",
+      available: false,
+      route: "/subjects/english"
+    },
+    {
+      id: "science",
+      title: "科学启蒙",
+      description: "自然现象、科学常识",
+      icon: "🔬",
+      available: false,
+      route: "/subjects/science"
     }
   ];
 
@@ -41,56 +47,65 @@ export default function Home() {
         <h1 className="text-4xl font-light text-gray-800 mb-3 tracking-wide">
           YOLAS
         </h1>
-        <p className="text-lg text-gray-600">小朋友数学练习系统</p>
+        <p className="text-lg text-gray-600">小朋友成长教育系统</p>
+        <p className="text-sm text-gray-500 mt-2">适合 3-12 岁儿童使用</p>
       </header>
 
       {/* 主要内容 */}
       <main className="flex-1 max-w-5xl mx-auto px-4 pb-8">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-medium text-gray-800 mb-3">选择年龄段</h2>
-          <p className="text-gray-600">选择适合的难度开始练习</p>
+          <h2 className="text-2xl font-medium text-gray-800 mb-3">选择学科</h2>
+          <p className="text-gray-600">选择想要练习的学科开始学习</p>
         </div>
 
-        {/* 年龄组卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {ageGroups.map((ageGroup, index) => (
-            <Link 
-              key={ageGroup.group}
-              href={`/math/${ageGroup.group}`}
-              className="block group"
-            >
-              <div className={`
-                ${ageGroup.bgColor}
-                ${ageGroup.textColor}
-                border-2 ${ageGroup.borderColor}
-                rounded-lg
-                p-6
-                hover:border-gray-500
-                transition-colors
-                duration-200
-                h-48
-                flex
-                flex-col
-                justify-between
-              `}>
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-medium">{ageGroup.title}</h3>
-                    <span className="text-sm text-gray-500">{ageGroup.subtitle}</span>
+        {/* 学科卡片 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {subjects.map((subject, index) => (
+            <div key={subject.id} className="relative">
+              {subject.available ? (
+                <Link 
+                  href={subject.route}
+                  className="block group"
+                >
+                  <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-colors duration-200 h-40 flex flex-col justify-between">
+                    <div className="text-center">
+                      <div className="text-4xl mb-3">{subject.icon}</div>
+                      <h3 className="text-lg font-medium text-gray-800 mb-2">{subject.title}</h3>
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        {subject.description}
+                      </p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="text-sm text-gray-500 group-hover:text-gray-700">
+                        开始学习 →
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {ageGroup.description}
-                  </p>
-                </div>
-                
-                <div className="flex justify-between items-center pt-4">
-                  <div className="text-2xl font-light">0{index + 1}</div>
-                  <div className="text-sm text-gray-500 group-hover:text-gray-700">
-                    开始练习 →
+                </Link>
+              ) : (
+                <div className="bg-gray-100 border-2 border-gray-200 rounded-lg p-6 h-40 flex flex-col justify-between opacity-60">
+                  <div className="text-center">
+                    <div className="text-4xl mb-3 grayscale">{subject.icon}</div>
+                    <h3 className="text-lg font-medium text-gray-600 mb-2">{subject.title}</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      {subject.description}
+                    </p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="text-sm text-gray-400">
+                      即将推出
+                    </div>
+                  </div>
+                  
+                  {/* 即将推出标签 */}
+                  <div className="absolute -top-2 -right-2 bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                    敬请期待
                   </div>
                 </div>
-              </div>
-            </Link>
+              )}
+            </div>
           ))}
         </div>
 
@@ -100,12 +115,15 @@ export default function Home() {
             href="/stats"
             className="inline-flex items-center gap-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors text-sm"
           >
-            统计数据
+            学习统计
           </Link>
           
-          <div className="text-xs text-gray-400">
-            适合 3-12 岁儿童使用
-          </div>
+          <Link
+            href="/about"
+            className="inline-flex items-center gap-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors text-sm"
+          >
+            关于我们
+          </Link>
         </div>
       </main>
     </div>
