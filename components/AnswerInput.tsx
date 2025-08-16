@@ -63,14 +63,14 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
   return (
     <div>
       {/* 数字键盘 */}
-      <div className="max-w-xs mx-auto">
+      <div className="max-w-sm mx-auto">
         <div className="grid grid-cols-3 gap-1 mb-1">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <button
               key={num}
               onClick={() => handleNumberPadClick(num.toString())}
               disabled={disabled}
-              className="py-2 px-3 bg-white border border-gray-300 rounded text-gray-800 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="py-3 sm:py-2 px-3 bg-white border border-gray-300 rounded text-gray-800 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg sm:text-base min-h-[48px] sm:min-h-[auto]"
             >
               {num}
             </button>
@@ -82,7 +82,7 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
           <button
             onClick={() => handleNumberPadClick('clear')}
             disabled={disabled}
-            className="py-2 px-3 bg-gray-100 border border-gray-300 rounded text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+            className="py-3 sm:py-2 px-3 bg-gray-100 border border-gray-300 rounded text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm min-h-[48px] sm:min-h-[auto]"
           >
             清除
           </button>
@@ -91,7 +91,7 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
           <button
             onClick={() => handleNumberPadClick('0')}
             disabled={disabled}
-            className="py-2 px-3 bg-white border border-gray-300 rounded text-gray-800 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="py-3 sm:py-2 px-3 bg-white border border-gray-300 rounded text-gray-800 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg sm:text-base min-h-[48px] sm:min-h-[auto]"
           >
             0
           </button>
@@ -100,7 +100,7 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
           <button
             onClick={() => handleNumberPadClick('backspace')}
             disabled={disabled}
-            className="py-2 px-3 bg-gray-100 border border-gray-300 rounded text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+            className="py-3 sm:py-2 px-3 bg-gray-100 border border-gray-300 rounded text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm min-h-[48px] sm:min-h-[auto]"
           >
             删除
           </button>
@@ -113,12 +113,14 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
           onClick={onSubmit}
           disabled={disabled || value.trim() === ''}
           className={`
-            py-2
-            px-6
+            py-3 sm:py-2
+            px-8 sm:px-6
             bg-gray-800
             text-white
             rounded
             transition-colors
+            text-base sm:text-sm
+            min-h-[48px] sm:min-h-[auto]
             ${disabled || value.trim() === ''
               ? 'opacity-50 cursor-not-allowed'
               : 'hover:bg-gray-700'

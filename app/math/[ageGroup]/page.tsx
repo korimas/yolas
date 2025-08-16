@@ -56,20 +56,20 @@ export default function MathPracticePage() {
       [AgeGroup.PRESCHOOL]: {
         title: '学前班练习',
         totalQuestions: 10,
-        fontSize: 'text-4xl',
-        buttonSize: 'text-2xl px-8 py-4'
+        fontSize: 'text-2xl sm:text-4xl',
+        buttonSize: 'text-lg sm:text-2xl px-4 sm:px-8 py-2 sm:py-4'
       },
       [AgeGroup.ELEMENTARY_LOW]: {
         title: '小学低年级练习', 
         totalQuestions: 15,
-        fontSize: 'text-3xl',
-        buttonSize: 'text-xl px-6 py-3'
+        fontSize: 'text-xl sm:text-3xl',
+        buttonSize: 'text-base sm:text-xl px-4 sm:px-6 py-2 sm:py-3'
       },
       [AgeGroup.ELEMENTARY_HIGH]: {
         title: '小学高年级练习',
         totalQuestions: 20,
-        fontSize: 'text-2xl',
-        buttonSize: 'text-lg px-6 py-2'
+        fontSize: 'text-lg sm:text-2xl',
+        buttonSize: 'text-sm sm:text-lg px-4 sm:px-6 py-2'
       }
     };
     return configs[ageGroup] || configs[AgeGroup.PRESCHOOL];
@@ -204,7 +204,7 @@ export default function MathPracticePage() {
   }
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-50 flex flex-col">
 
       {/* 头部导航 */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
@@ -231,10 +231,10 @@ export default function MathPracticePage() {
       </div>
 
       {/* 主要内容 */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 overflow-hidden">
+      <main className="flex-1 flex flex-col lg:grid lg:grid-cols-4 gap-2 lg:gap-4 p-2 lg:p-4 overflow-hidden">
         {/* 题目区域 */}
-        <div className="lg:col-span-3 flex flex-col">
-          <div className="bg-white border border-gray-200 rounded p-6 flex-1 flex flex-col justify-center space-y-12">
+        <div className="flex-1 lg:col-span-3 flex flex-col">
+          <div className="bg-white border border-gray-200 rounded p-4 lg:p-6 flex-1 flex flex-col justify-center space-y-6 lg:space-y-12">
             <div>
               <QuestionDisplay 
                 question={currentQuestion}
@@ -264,11 +264,11 @@ export default function MathPracticePage() {
         </div>
 
         {/* 统计面板 */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 h-auto lg:h-full">
           <StatsPanel 
             stats={stats}
             ageGroup={ageGroup}
-            className="bg-white border border-gray-200 rounded p-4 h-full"
+            className="bg-white border border-gray-200 rounded p-3 lg:p-4 h-auto lg:h-full"
           />
         </div>
       </main>

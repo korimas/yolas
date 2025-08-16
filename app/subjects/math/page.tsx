@@ -35,7 +35,7 @@ export default function MathSubjectPage() {
   ];
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-50 flex flex-col">
       {/* 头部 */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -51,15 +51,15 @@ export default function MathSubjectPage() {
       </header>
 
       {/* 主要内容 */}
-      <main className="flex-1 max-w-5xl mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <div className="text-5xl mb-4">🧮</div>
-          <h2 className="text-2xl font-medium text-gray-800 mb-3">数学练习</h2>
-          <p className="text-gray-600">选择适合的年龄段开始口算练习</p>
+      <main className="flex-1 max-w-5xl mx-auto px-4 py-6 overflow-y-auto">
+        <div className="text-center mb-6">
+          <div className="text-4xl sm:text-5xl mb-4">🧮</div>
+          <h2 className="text-xl sm:text-2xl font-medium text-gray-800 mb-3">数学练习</h2>
+          <p className="text-sm sm:text-base text-gray-600">选择适合的年龄段开始口算练习</p>
         </div>
 
         {/* 年龄组卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
           {ageGroups.map((ageGroup, index) => (
             <Link 
               key={ageGroup.group}
@@ -71,28 +71,28 @@ export default function MathSubjectPage() {
                 ${ageGroup.textColor}
                 border-2 ${ageGroup.borderColor}
                 rounded-lg
-                p-6
+                p-4 sm:p-6
                 hover:border-gray-500
                 transition-colors
                 duration-200
-                h-48
+                h-40 sm:h-48
                 flex
                 flex-col
                 justify-between
               `}>
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-medium">{ageGroup.title}</h3>
-                    <span className="text-sm text-gray-500">{ageGroup.subtitle}</span>
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 className="text-lg sm:text-xl font-medium">{ageGroup.title}</h3>
+                    <span className="text-xs sm:text-sm text-gray-500">{ageGroup.subtitle}</span>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
                     {ageGroup.description}
                   </p>
                 </div>
                 
-                <div className="flex justify-between items-center pt-4">
-                  <div className="text-2xl font-light">0{index + 1}</div>
-                  <div className="text-sm text-gray-500 group-hover:text-gray-700">
+                <div className="flex justify-between items-center pt-3 sm:pt-4">
+                  <div className="text-xl sm:text-2xl font-light">0{index + 1}</div>
+                  <div className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-700">
                     开始练习 →
                   </div>
                 </div>

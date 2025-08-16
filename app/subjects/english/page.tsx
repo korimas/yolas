@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function EnglishSubjectPage() {
   return (
-    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-50 flex flex-col">
       {/* 头部 */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-6xl mx-auto flex justify-between items-center">

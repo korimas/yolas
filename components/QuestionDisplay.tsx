@@ -100,16 +100,17 @@ const QuestionDisplay: React.FC<QuestionDisplayWithInputProps> = ({
           disabled={disabled}
           className={`
             ${fontSize}
-            w-24
+            w-20 sm:w-24
             text-center
             font-medium
             border-2
             border-gray-300
             rounded
-            py-1
+            py-2 sm:py-1
             px-2
             outline-none
             transition-colors
+            min-h-[44px] sm:min-h-[auto]
             ${disabled 
               ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
               : 'bg-white text-gray-800 focus:border-gray-500'
