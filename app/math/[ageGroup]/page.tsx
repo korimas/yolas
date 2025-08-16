@@ -264,7 +264,7 @@ export default function MathPracticePage() {
         <div className="container container-xl">
           <div className="mb-2 flex justify-between items-center">
             <span className="text-body-sm">学习进度</span>
-            <span className="text-body-sm font-medium">{Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}%</span>
+            <span className="text-body-sm font-medium">{Math.round(((currentQuestionIndex) / questions.length) * 100)}%</span>
           </div>
           <div
             className="h-2 rounded-full overflow-hidden"
@@ -274,7 +274,7 @@ export default function MathPracticePage() {
               className="h-full transition-all duration-500 rounded-full"
               style={{
                 background: 'var(--primary)',
-                width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`
+                width: `${((currentQuestionIndex) / questions.length) * 100}%`
               }}
             ></div>
           </div>

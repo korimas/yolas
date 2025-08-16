@@ -92,16 +92,12 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
           className={`
             py-3 sm:py-2
             px-8 sm:px-6
-            bg-gray-800
-            text-white
+            border border-gray-300
+            text-gray-700
             rounded
             transition-colors
             text-base sm:text-sm
             min-h-[48px] sm:min-h-[auto]
-            ${disabled || value.trim() === ''
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-gray-700'
-            }
           `}
         >
           提交
