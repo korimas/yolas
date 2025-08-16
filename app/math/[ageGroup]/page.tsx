@@ -8,7 +8,6 @@ import { QuestionGenerator } from '@/lib/questionGenerator';
 import { StorageManager } from '@/lib/storage';
 import QuestionDisplay from '../../../components/QuestionDisplay';
 import AnswerInput from '../../../components/AnswerInput';
-import ProgressBar from '../../../components/ProgressBar';
 import StatsPanel from '../../../components/StatsPanel';
 
 
@@ -22,6 +21,7 @@ export default function MathPracticePage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isAnswered, setIsAnswered] = useState(false);
+  const [isShowResult, setIsShowResult] = useState(false);
 
   const [session, setSession] = useState<LearningSession | null>(null);
   const [answers, setAnswers] = useState<AnswerRecord[]>([]);
@@ -41,7 +41,7 @@ export default function MathPracticePage() {
     const correctAnswers = answers.filter(a => a.isCorrect).length;
     const totalQuestions = answers.length;
     const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
-    
+
     return {
       totalQuestions,
       correctAnswers,
@@ -60,7 +60,7 @@ export default function MathPracticePage() {
         buttonSize: 'text-lg sm:text-2xl px-4 sm:px-8 py-2 sm:py-4'
       },
       [AgeGroup.ELEMENTARY_LOW]: {
-        title: '小学低年级练习', 
+        title: '小学低年级练习',
         totalQuestions: 15,
         fontSize: 'text-xl sm:text-3xl',
         buttonSize: 'text-base sm:text-xl px-4 sm:px-6 py-2 sm:py-3'
@@ -83,7 +83,7 @@ export default function MathPracticePage() {
     setAnswers([]);
     setStartTime(new Date());
     setQuestionStartTime(new Date());
-    
+
     // 创建新的学习会话
     const newSession: LearningSession = {
       id: `session_${Date.now()}`,
@@ -127,6 +127,13 @@ export default function MathPracticePage() {
     router.push(`/math/${ageGroup}/result?sessionId=${completedSession.id}`);
   }, [session, startTime, answers, router, ageGroup]);
 
+  // 更新答案
+  const handleUpdateAnswer = useCallback((value: string) => {
+    setIsAnswered(false);
+    setIsShowResult(false);
+    setUserAnswer(value)
+  }, [userAnswer]);
+
   // 提交答案
   const handleSubmitAnswer = useCallback(() => {
     if (!currentQuestion || userAnswer.trim() === '' || isAnswered) return;
@@ -149,40 +156,34 @@ export default function MathPracticePage() {
 
     // 如果答对，0.5秒后自动切换下一题
     if (isCorrect) {
+      setIsShowResult(true);
       setTimeout(() => {
         if (currentQuestionIndex < questions.length - 1) {
           setCurrentQuestionIndex(prev => prev + 1);
           setUserAnswer('');
           setIsAnswered(false);
+          setIsShowResult(false);
           setQuestionStartTime(new Date());
         } else {
           // 完成所有题目
           completeSession();
         }
       }, 500);
+    } else {
+      setIsAnswered(false);
+      setIsShowResult(true);
     }
   }, [currentQuestion, userAnswer, isAnswered, questionStartTime, currentQuestionIndex, questions.length, completeSession]);
 
-  // 下一题
-  const handleNextQuestion = useCallback(() => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setUserAnswer('');
-      setIsAnswered(false);
-      setQuestionStartTime(new Date());
-    }
-  }, [currentQuestionIndex, questions.length]);
-
-  // 完成练习
-  const handleFinishSession = useCallback(() => {
-    completeSession();
-  }, [completeSession]);
 
   // 处理键盘输入
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      console.log('handleKeyPress', e.key)
       if (e.key === 'Enter' && !isAnswered) {
         handleSubmitAnswer();
+      } else {
+        setIsShowResult(false);
       }
     };
 
@@ -197,8 +198,8 @@ export default function MathPracticePage() {
         <div className="text-center p-8 bg-white rounded-2xl shadow-lg">
           <h1 className="text-2xl font-bold text-red-600 mb-4">无效的年龄组</h1>
           <p className="text-gray-600 mb-6">请选择正确的年龄段</p>
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
           >
             返回首页
@@ -213,9 +214,9 @@ export default function MathPracticePage() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
         <div className="text-center">
-          <div 
+          <div
             className="w-20 h-20 mx-auto mb-8 flex items-center justify-center text-3xl"
-            style={{ 
+            style={{
               background: 'var(--primary-subtle)',
               borderRadius: 'var(--radius-2xl)',
               color: 'var(--primary)'
@@ -223,9 +224,9 @@ export default function MathPracticePage() {
           >
             🧮
           </div>
-          <div 
+          <div
             className="w-16 h-16 mx-auto mb-8 rounded-full border-3 border-transparent animate-spin"
-            style={{ 
+            style={{
               borderTopColor: 'var(--primary)',
               borderRightColor: 'var(--primary)'
             }}
@@ -243,7 +244,7 @@ export default function MathPracticePage() {
       <nav className="py-4 border-b" style={{ borderColor: 'var(--border-default)' }}>
         <div className="container container-xl">
           <div className="flex items-center justify-between">
-            <Link 
+            <Link
               href="/subjects/math"
               className="button button-ghost"
             >
@@ -265,13 +266,13 @@ export default function MathPracticePage() {
             <span className="text-body-sm">学习进度</span>
             <span className="text-body-sm font-medium">{Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}%</span>
           </div>
-          <div 
+          <div
             className="h-2 rounded-full overflow-hidden"
             style={{ background: 'var(--border-light)' }}
           >
             <div
               className="h-full transition-all duration-500 rounded-full"
-              style={{ 
+              style={{
                 background: 'var(--primary)',
                 width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`
               }}
@@ -287,7 +288,7 @@ export default function MathPracticePage() {
             {/* 统计信息面板 - 放在算式上面 */}
             <div className="mb-8">
               <div className="card-outlined p-4">
-                <StatsPanel 
+                <StatsPanel
                   stats={stats}
                   ageGroup={ageGroup}
                   className=""
@@ -300,29 +301,22 @@ export default function MathPracticePage() {
               <div className="max-w-4xl mx-auto w-full space-y-12">
                 {/* 题目显示 */}
                 <div className="text-center">
-                  <QuestionDisplay 
+                  <QuestionDisplay
                     question={currentQuestion}
                     fontSize={ageGroupConfig.fontSize}
-                    isAnswered={isAnswered}
+                    isShowResult={isShowResult}
                     userAnswer={userAnswer}
-                    onAnswerChange={setUserAnswer}
-                    onSubmit={handleSubmitAnswer}
+                    onAnswerChange={handleUpdateAnswer}
                     disabled={isAnswered}
                   />
                 </div>
-                
+
                 {/* 答题区域 */}
                 <div className="text-center">
                   <AnswerInput
                     value={userAnswer}
-                    onChange={setUserAnswer}
+                    onChange={handleUpdateAnswer}
                     onSubmit={handleSubmitAnswer}
-                    disabled={isAnswered}
-                    fontSize={ageGroupConfig.fontSize}
-                    buttonSize={ageGroupConfig.buttonSize}
-                    showResult={isAnswered}
-                    isCorrect={isAnswered ? parseInt(userAnswer) === currentQuestion?.correctAnswer : false}
-                    correctAnswer={currentQuestion?.correctAnswer}
                   />
                 </div>
               </div>

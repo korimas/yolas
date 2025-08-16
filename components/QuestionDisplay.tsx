@@ -6,8 +6,8 @@ import { MathQuestion, QuestionType, OperationType } from '@/types';
 interface QuestionDisplayProps {
   question: MathQuestion | null;
   fontSize?: string;
-  isAnswered?: boolean;
   userAnswer?: string;
+  isShowResult?: boolean;
 }
 
 
@@ -31,32 +31,16 @@ function getOperationSymbol(operation: OperationType): string {
 interface QuestionDisplayWithInputProps extends QuestionDisplayProps {
   userAnswer: string;
   onAnswerChange: (value: string) => void;
-  onSubmit: () => void;
   disabled?: boolean;
 }
 
 const QuestionDisplay: React.FC<QuestionDisplayWithInputProps> = ({ 
   question, 
   fontSize = 'text-3xl',
-  isAnswered = false,
+  isShowResult = false,
   userAnswer = '',
-  onAnswerChange,
-  onSubmit,
   disabled = false
 }) => {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // 只允许数字和负号
-    if (/^-?\d*$/.test(value)) {
-      onAnswerChange(value);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !disabled && userAnswer.trim() !== '') {
-      onSubmit();
-    }
-  };
 
   if (!question) {
     return (
@@ -95,8 +79,7 @@ const QuestionDisplay: React.FC<QuestionDisplayWithInputProps> = ({
         <input
           type="text"
           value={userAnswer}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
+          readOnly={true}
           disabled={disabled}
           className={`
             ${fontSize}
@@ -119,7 +102,7 @@ const QuestionDisplay: React.FC<QuestionDisplayWithInputProps> = ({
         />
         
         {/* 正确/错误标记 */}
-        {isAnswered && (
+        {isShowResult && (
           <span className={`${fontSize} font-bold`}>
             {parseInt(userAnswer) === question.correctAnswer ? (
               <span className="text-green-600">✓</span>

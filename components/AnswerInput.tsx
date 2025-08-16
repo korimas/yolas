@@ -7,11 +7,6 @@ interface AnswerInputProps {
   onChange: (value: string) => void;
   onSubmit: () => void;
   disabled?: boolean;
-  fontSize?: string;
-  buttonSize?: string;
-  showResult?: boolean;
-  isCorrect?: boolean;
-  correctAnswer?: number;
 }
 
 const AnswerInput: React.FC<AnswerInputProps> = ({
@@ -19,11 +14,6 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
   onChange,
   onSubmit,
   disabled = false,
-  fontSize = 'text-3xl',
-  buttonSize = 'text-xl px-6 py-3',
-  showResult = false,
-  isCorrect = false,
-  correctAnswer
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -34,19 +24,6 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
     }
   }, [disabled]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    // 只允许数字和负号
-    if (/^-?\d*$/.test(inputValue)) {
-      onChange(inputValue);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !disabled && value.trim() !== '') {
-      onSubmit();
-    }
-  };
 
   const handleNumberPadClick = (num: string) => {
     if (disabled) return;
@@ -127,7 +104,7 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
             }
           `}
         >
-          {showResult ? '下一题' : '提交'}
+          提交
         </button>
       </div>
     </div>
