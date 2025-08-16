@@ -23,7 +23,7 @@ export default function AboutPage() {
       <main className="flex-1 max-w-4xl mx-auto px-4 py-8 overflow-y-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-light text-gray-800 mb-3">YOLAS</h1>
-          <p className="text-lg text-gray-600">小朋友成长教育系统</p>
+          <p className="text-lg text-gray-600">儿童成长教育系统</p>
         </div>
 
         <div className="space-y-8">

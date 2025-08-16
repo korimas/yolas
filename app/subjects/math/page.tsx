@@ -10,116 +10,186 @@ export default function MathSubjectPage() {
       title: "学前班",
       subtitle: "3-5岁",
       description: "数字认知 · 10以内加减法",
-      bgColor: "bg-gray-50",
-      textColor: "text-gray-800",
-      borderColor: "border-gray-200"
+      level: "基础",
+      icon: "🌱"
     },
     {
       group: AgeGroup.ELEMENTARY_LOW,
       title: "小学低年级", 
       subtitle: "6-8岁",
       description: "100以内加减法 · 乘法口诀 · 简单应用题",
-      bgColor: "bg-gray-100",
-      textColor: "text-gray-800", 
-      borderColor: "border-gray-300"
+      level: "进阶",
+      icon: "📚"
     },
     {
       group: AgeGroup.ELEMENTARY_HIGH,
       title: "小学高年级",
       subtitle: "9-12岁", 
       description: "多位数运算 · 分数运算 · 文字应用题",
-      bgColor: "bg-gray-200",
-      textColor: "text-gray-800",
-      borderColor: "border-gray-400"
+      level: "高级",
+      icon: "🎯"
+    }
+  ];
+
+  const features = [
+    {
+      icon: "⚡",
+      title: "快速答题",
+      description: "简洁界面，专注练习"
+    },
+    {
+      icon: "📊",
+      title: "智能统计",
+      description: "实时跟踪学习进度"
+    },
+    {
+      icon: "🎯",
+      title: "自适应难度",
+      description: "根据表现调整题目"
     }
   ];
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
-      {/* 头部 */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link 
-            href="/"
-            className="text-gray-600 hover:text-gray-800 transition-colors text-sm"
-          >
-            ← 返回首页
-          </Link>
-          <h1 className="text-lg font-medium text-gray-800">数学练习</h1>
-          <div></div>
-        </div>
-      </header>
-
-      {/* 主要内容 */}
-      <main className="flex-1 max-w-5xl mx-auto px-4 py-6 overflow-y-auto">
-        <div className="text-center mb-6">
-          <div className="text-4xl sm:text-5xl mb-4">🧮</div>
-          <h2 className="text-xl sm:text-2xl font-medium text-gray-800 mb-3">数学练习</h2>
-          <p className="text-sm sm:text-base text-gray-600">选择适合的年龄段开始口算练习</p>
-        </div>
-
-        {/* 年龄组卡片 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
-          {ageGroups.map((ageGroup, index) => (
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      {/* 专业导航栏 */}
+      <nav className="py-6 border-b" style={{ borderColor: 'var(--border-default)' }}>
+        <div className="container container-xl">
+          <div className="flex items-center justify-between">
             <Link 
-              key={ageGroup.group}
-              href={`/math/${ageGroup.group}`}
-              className="block group"
+              href="/"
+              className="button button-ghost"
             >
-              <div className={`
-                ${ageGroup.bgColor}
-                ${ageGroup.textColor}
-                border-2 ${ageGroup.borderColor}
-                rounded-lg
-                p-4 sm:p-6
-                hover:border-gray-500
-                transition-colors
-                duration-200
-                h-40 sm:h-48
-                flex
-                flex-col
-                justify-between
-              `}>
-                <div>
-                  <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <h3 className="text-lg sm:text-xl font-medium">{ageGroup.title}</h3>
-                    <span className="text-xs sm:text-sm text-gray-500">{ageGroup.subtitle}</span>
+              ← 返回首页
+            </Link>
+            <h1 className="text-h2">数学练习</h1>
+            <div className="w-20"></div> {/* 占位符保持居中 */}
+          </div>
+        </div>
+      </nav>
+
+      {/* 主要内容区域 */}
+      <main className="py-24">
+        <div className="container container-xl">
+          {/* 页面介绍区域 */}
+          <div className="text-center mb-24">
+            <div 
+              className="w-24 h-24 mx-auto mb-8 flex items-center justify-center text-4xl"
+              style={{ 
+                background: 'var(--primary-subtle)',
+                borderRadius: 'var(--radius-2xl)',
+                color: 'var(--primary)'
+              }}
+            >
+              🧮
+            </div>
+            <h2 className="text-display mb-8">数学练习</h2>
+            <p className="text-body-lg max-w-3xl mx-auto">
+              根据孩子的年龄和认知发展水平，我们精心设计了三个不同难度的练习阶段。
+              每个阶段都有针对性的练习内容，确保孩子能够循序渐进地提升数学能力。
+            </p>
+          </div>
+
+          {/* 年龄组选择卡片 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
+            {ageGroups.map((ageGroup, index) => (
+              <Link
+                key={ageGroup.group}
+                href={`/math/${ageGroup.group}`}
+                className="block group"
+              >
+                <div className="card-elevated h-96 p-8 flex flex-col justify-between group-hover:scale-[1.02] transition-all duration-300">
+                  <div className="text-center">
+                    <div 
+                      className="w-24 h-24 flex items-center justify-center mb-8 mx-auto text-3xl group-hover:scale-110 transition-transform duration-300"
+                      style={{ 
+                        background: 'var(--primary-subtle)',
+                        borderRadius: 'var(--radius-2xl)',
+                        color: 'var(--primary)'
+                      }}
+                    >
+                      {ageGroup.icon}
+                    </div>
+                    <h3 className="text-h2 mb-4">
+                      {ageGroup.title}
+                    </h3>
+                    <p className="text-body mb-6">
+                      {ageGroup.subtitle}
+                    </p>
+                    <p className="text-body-sm leading-relaxed">
+                      {ageGroup.description}
+                    </p>
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                    {ageGroup.description}
+                  
+                  <div className="mt-8 flex items-center justify-between">
+                    <div 
+                      className="px-4 py-2 text-xs font-semibold tracking-wider"
+                      style={{ 
+                        background: 'var(--primary-subtle)',
+                        color: 'var(--primary)',
+                        borderRadius: 'var(--radius-full)'
+                      }}
+                    >
+                      {ageGroup.level}
+                    </div>
+                    <div 
+                      className="text-5xl opacity-20"
+                      style={{ 
+                        fontWeight: 'var(--font-extralight)',
+                        color: 'var(--text-quaternary)'
+                      }}
+                    >
+                      0{index + 1}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* 渐变分隔线 */}
+          <div className="divider-gradient"></div>
+
+          {/* 练习特色介绍 */}
+          <div className="mb-24">
+            <div className="text-center mb-16">
+              <h3 className="text-h1 mb-6">练习特色</h3>
+              <p className="text-body-lg max-w-2xl mx-auto">
+                我们的数学练习系统采用先进的教学理念，为孩子提供个性化的学习体验
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {features.map((feature, index) => (
+                <div key={index} className="text-center">
+                  <div 
+                    className="w-20 h-20 flex items-center justify-center mb-8 mx-auto text-3xl"
+                    style={{ 
+                      background: 'var(--primary-subtle)',
+                      borderRadius: 'var(--radius-2xl)',
+                      color: 'var(--primary)'
+                    }}
+                  >
+                    {feature.icon}
+                  </div>
+                  <h4 className="text-h3 mb-4">
+                    {feature.title}
+                  </h4>
+                  <p className="text-body-sm">
+                    {feature.description}
                   </p>
                 </div>
-                
-                <div className="flex justify-between items-center pt-3 sm:pt-4">
-                  <div className="text-xl sm:text-2xl font-light">0{index + 1}</div>
-                  <div className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-700">
-                    开始练习 →
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              ))}
+            </div>
+          </div>
 
-        {/* 练习特色 */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">练习特色</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-2xl mb-2">⚡</div>
-              <h4 className="font-medium text-gray-800">快速答题</h4>
-              <p className="text-sm text-gray-600">简洁界面，专注练习</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">📊</div>
-              <h4 className="font-medium text-gray-800">智能统计</h4>
-              <p className="text-sm text-gray-600">实时跟踪学习进度</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">🎯</div>
-              <h4 className="font-medium text-gray-800">自适应难度</h4>
-              <p className="text-sm text-gray-600">根据表现调整题目</p>
-            </div>
+          {/* 底部导航 */}
+          <div className="text-center">
+            <Link
+              href="/"
+              className="button button-primary button-lg"
+            >
+              返回主页
+            </Link>
           </div>
         </div>
       </main>

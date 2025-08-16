@@ -1,4 +1,4 @@
-# YOLAS - 小朋友成长教育系统
+# YOLAS - 儿童成长教育系统
 
 一个专为3-12岁儿童设计的数学口算练习系统，采用Next.js 14、TypeScript和Tailwind CSS构建。
 

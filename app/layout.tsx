@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YOLAS - 小朋友成长教育系统",
+  title: "YOLAS - 儿童成长教育系统",
   description: "专为3-12岁儿童设计的数学口算练习系统",
 };
 
