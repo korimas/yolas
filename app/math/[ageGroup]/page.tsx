@@ -282,11 +282,11 @@ export default function MathPracticePage() {
       </div>
 
       {/* 主要内容区域 */}
-      <main className="flex-1 py-8">
+      <main className="flex-1 py-2">
         <div className="container container-xl h-full">
           <div className="max-w-4xl mx-auto w-full">
             {/* 统计信息面板 - 放在算式上面 */}
-            <div className="mb-8">
+            <div className="mb-4">
               <div className="card-outlined p-4">
                 <StatsPanel
                   stats={stats}

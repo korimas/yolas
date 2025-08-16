@@ -48,30 +48,23 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ stats, ageGroup, className = ''
 
   return (
     <div className={className}>
-      {/* 标题 */}
-      <div className="text-center mb-4">
-        <h3 className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>学习统计</h3>
-        <div className="text-xs mt-1" style={{ color: 'var(--text-quaternary)' }}>
-          {ageGroupEmojis[ageGroup]} {ageGroup === AgeGroup.PRESCHOOL ? '学前班' : ageGroup === AgeGroup.ELEMENTARY_LOW ? '小学低年级' : '小学高年级'}
-        </div>
-      </div>
 
       {/* 统计项目 - 紧凑布局 */}
       <div className="grid grid-cols-2 gap-3">
         {/* 答题进度 */}
-        <div className="text-center p-3 rounded-lg" style={{ background: 'var(--primary-subtle)' }}>
+        <div className="text-center p-1 rounded-lg" style={{ background: 'var(--primary-subtle)' }}>
           <div className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>{stats.totalQuestions}</div>
           <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>已答题数</div>
         </div>
 
         {/* 正确答案 */}
-        <div className="text-center p-3 rounded-lg" style={{ background: 'var(--success-light)' }}>
+        <div className="text-center p-1 rounded-lg" style={{ background: 'var(--success-light)' }}>
           <div className="text-2xl font-bold" style={{ color: 'var(--success)' }}>{stats.correctAnswers}</div>
           <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>答对题数</div>
         </div>
 
         {/* 正确率 */}
-        <div className="text-center p-3 rounded-lg" style={{ background: 'var(--warning-light)' }}>
+        <div className="text-center p-1 rounded-lg" style={{ background: 'var(--warning-light)' }}>
           <div className="text-2xl font-bold" style={{ color: 'var(--warning)' }}>
             {stats.totalQuestions > 0 ? Math.round(stats.accuracy) : 0}%
           </div>
@@ -79,7 +72,7 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ stats, ageGroup, className = ''
         </div>
 
         {/* 用时 */}
-        <div className="text-center p-3 rounded-lg" style={{ background: 'var(--error-light)' }}>
+        <div className="text-center p-1 rounded-lg" style={{ background: 'var(--error-light)' }}>
           <div className="text-lg font-bold" style={{ color: 'var(--error)' }}>{formatTime(stats.timeSpent)}</div>
           <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>学习时长</div>
         </div>
