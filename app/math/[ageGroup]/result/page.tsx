@@ -80,12 +80,14 @@ export default function ResultPage() {
       {/* 头部 */}
       <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link 
-            href="/"
-            className="text-gray-600 hover:text-gray-800 transition-colors text-sm"
+        <button
+            onClick={() => router.push(`/math/${ageGroup}`)}
+            className="bg-gray-800 text-white py-2 px-6 rounded hover:bg-gray-700 transition-colors"
           >
-            ← 返回首页
-          </Link>
+            返回
+          </button>
+
+
           <h1 className="text-lg font-medium text-gray-800">学习结果</h1>
           <div></div>
         </div>
