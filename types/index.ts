@@ -16,7 +16,6 @@ export enum OperationType {
 // 题目类型
 export enum QuestionType {
   NUMERICAL = "numerical", // 数字计算
-  VISUAL_COUNTING = "visual_counting", // 图形计数
   WORD_PROBLEM = "word_problem" // 应用题
 }
 
@@ -31,21 +30,14 @@ export interface MathQuestion {
   correctAnswer: number;
   ageGroup: AgeGroup;
   difficulty: number; // 1-5难度等级
-  visualElements?: VisualElement[]; // 用于图形计数题
+  answerRecord?: AnswerRecord;
 }
 
-// 图形元素接口
-export interface VisualElement {
-  type: 'circle' | 'square' | 'triangle' | 'star';
-  color: string;
-  count: number;
-}
 
 // 答题记录接口
 export interface AnswerRecord {
   questionId: string;
   userAnswer: number;
-  correctAnswer: number;
   isCorrect: boolean;
   timeSpent: number; // 毫秒
   timestamp: Date;
@@ -60,7 +52,7 @@ export interface LearningSession {
   totalQuestions: number;
   correctAnswers: number;
   totalTime: number; // 毫秒
-  answers: AnswerRecord[];
+  questions: MathQuestion[];
 }
 
 // 用户进度接口

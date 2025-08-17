@@ -20,7 +20,6 @@ export default function MathPracticePage() {
   const [questions, setQuestions] = useState<MathQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
-  const [isAnswered, setIsAnswered] = useState(false);
   const [isShowResult, setIsShowResult] = useState(false);
 
   const [session, setSession] = useState<LearningSession | null>(null);
@@ -92,7 +91,7 @@ export default function MathPracticePage() {
       totalQuestions: ageGroupConfig.totalQuestions,
       correctAnswers: 0,
       totalTime: 0,
-      answers: []
+      questions: []
     };
     setSession(newSession);
   }, [ageGroup, ageGroupConfig.totalQuestions]);
@@ -110,14 +109,14 @@ export default function MathPracticePage() {
 
     const endTime = new Date();
     const totalTime = endTime.getTime() - startTime.getTime();
-    const correctAnswers = answers.filter(a => a.isCorrect).length;
+    const correctAnswers = questions.filter(a => a.answerRecord && a.answerRecord.isCorrect).length;
 
     const completedSession: LearningSession = {
       ...session,
       endTime,
       totalTime,
       correctAnswers,
-      answers
+      questions
     };
 
     // 保存到本地存储
@@ -129,30 +128,38 @@ export default function MathPracticePage() {
 
   // 更新答案
   const handleUpdateAnswer = useCallback((value: string) => {
-    setIsAnswered(false);
     setIsShowResult(false);
     setUserAnswer(value)
   }, [userAnswer]);
 
   // 提交答案
   const handleSubmitAnswer = useCallback(() => {
-    if (!currentQuestion || userAnswer.trim() === '' || isAnswered) return;
-
+    if (!currentQuestion || userAnswer.trim() === '') return; // 如果当前题目为空或用户答案为空，则返回
     const numericAnswer = parseInt(userAnswer);
     const isCorrect = numericAnswer === currentQuestion.correctAnswer;
+    if (currentQuestion.answerRecord && currentQuestion.answerRecord.isCorrect) return; // 如果当前题目已答对，则返回
+
     const timeSpent = new Date().getTime() - questionStartTime.getTime();
 
-    const newAnswerRecord: AnswerRecord = {
-      questionId: currentQuestion.id,
-      userAnswer: numericAnswer,
-      correctAnswer: currentQuestion.correctAnswer,
-      isCorrect,
-      timeSpent,
-      timestamp: new Date()
-    };
+    if (currentQuestion.answerRecord) {
+      // 更新答案记录
+      currentQuestion.answerRecord.userAnswer = numericAnswer;
+      currentQuestion.answerRecord.isCorrect = isCorrect;
+      currentQuestion.answerRecord.timeSpent = timeSpent;
+      currentQuestion.answerRecord.timestamp = new Date();
+    } else {
+      // 创建新的答案记录
+      const newAnswerRecord: AnswerRecord = {
+        questionId: currentQuestion.id,
+        userAnswer: numericAnswer,
+        isCorrect,
+        timeSpent,
+        timestamp: new Date()
+      };
 
-    setAnswers(prev => [...prev, newAnswerRecord]);
-    setIsAnswered(true);
+      currentQuestion.answerRecord = newAnswerRecord;
+      // setAnswers(prev => [...prev, newAnswerRecord]);
+    }
 
     // 如果答对，0.5秒后自动切换下一题
     if (isCorrect) {
@@ -161,7 +168,6 @@ export default function MathPracticePage() {
         if (currentQuestionIndex < questions.length - 1) {
           setCurrentQuestionIndex(prev => prev + 1);
           setUserAnswer('');
-          setIsAnswered(false);
           setIsShowResult(false);
           setQuestionStartTime(new Date());
         } else {
@@ -170,26 +176,10 @@ export default function MathPracticePage() {
         }
       }, 500);
     } else {
-      setIsAnswered(false);
       setIsShowResult(true);
     }
-  }, [currentQuestion, userAnswer, isAnswered, questionStartTime, currentQuestionIndex, questions.length, completeSession]);
+  }, [currentQuestion, userAnswer, questionStartTime, currentQuestionIndex, questions.length, completeSession]);
 
-
-  // 处理键盘输入
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      console.log('handleKeyPress', e.key)
-      if (e.key === 'Enter' && !isAnswered) {
-        handleSubmitAnswer();
-      } else {
-        setIsShowResult(false);
-      }
-    };
-
-    window.addEventListener('keypress', handleKeyPress);
-    return () => window.removeEventListener('keypress', handleKeyPress);
-  }, [handleSubmitAnswer, isAnswered]);
 
   // 如果年龄组无效，显示错误页面
   if (!isValidAgeGroup) {
@@ -307,7 +297,6 @@ export default function MathPracticePage() {
                     isShowResult={isShowResult}
                     userAnswer={userAnswer}
                     onAnswerChange={handleUpdateAnswer}
-                    disabled={isAnswered}
                   />
                 </div>
 
