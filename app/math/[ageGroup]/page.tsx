@@ -37,8 +37,8 @@ export default function MathPracticePage() {
 
   // 统计信息
   const stats = useMemo(() => {
-    const correctAnswers = answers.filter(a => a.isCorrect).length;
-    const totalQuestions = answers.length;
+    const correctAnswers = questions.filter(a => a.answerRecord && a.answerRecord.isCorrect).length;
+    const totalQuestions = questions.filter(a => a.answerRecord !== undefined).length;
     const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
 
     return {
@@ -47,7 +47,7 @@ export default function MathPracticePage() {
       accuracy,
       timeSpent: new Date().getTime() - startTime.getTime()
     };
-  }, [answers, startTime]);
+  }, [currentQuestionIndex, startTime]);
 
   // 年龄组配置
   const ageGroupConfig = useMemo(() => {
@@ -142,9 +142,9 @@ export default function MathPracticePage() {
     const timeSpent = new Date().getTime() - questionStartTime.getTime();
 
     if (currentQuestion.answerRecord) {
-      // 更新答案记录
-      currentQuestion.answerRecord.userAnswer = numericAnswer;
-      currentQuestion.answerRecord.isCorrect = isCorrect;
+      // 更新答案记录，如果之前答错，不更新为正确答案记录
+      // currentQuestion.answerRecord.userAnswer = numericAnswer;
+      // currentQuestion.answerRecord.isCorrect = isCorrect;
       currentQuestion.answerRecord.timeSpent = timeSpent;
       currentQuestion.answerRecord.timestamp = new Date();
     } else {
